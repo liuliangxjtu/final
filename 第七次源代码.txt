@@ -1,0 +1,35 @@
+clc;clear;
+img=imread('test6.jpg');
+img1=permute(img(:,:,1),[1,2,3]);%test1有两层，只需要第一层
+img_edge1=edge(img1,'sobel');
+img_edge2=edge(img1,'prewitt');
+img_edge3=edge(img1,'canny');
+figure;
+subplot(121);
+imshow(img1);
+title('test6原图');
+subplot(122);
+imshow(img_edge1);
+title('test6经Sobel的图像');
+figure;
+subplot(121);
+imshow(img_edge2);
+title('test6经prewitt的图像');
+subplot(122);
+imshow(img_edge3);
+title('test6经canny算子的图像');
+
+figure;
+[H,T,R] = hough(img_edge1);%计算二值图像的标准霍夫变换，H为霍夫变换矩阵，T,R为计算霍夫变换的角度和半径值
+P  = houghpeaks(H,5);%提取极值点
+x = T(P(:,2)); 
+y = R(P(:,1));
+lines=houghlines(img_edge1,T,R,P);%提取线段
+imshow(img_edge1), hold on;
+for k = 1:length(lines)
+xy = [lines(k).point1; lines(k).point2];
+plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');%画出线段
+plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');%起点
+plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');%终点
+end
+title('取5个极值点');
